@@ -41,7 +41,7 @@ public class OrderRepsitory {
 
         // assigning orders to partners
         if (PartnerToOrder.containsKey(partnerId)) {
-            PartnerToOrder.put(partnerId, OrdersIDs);
+            OrdersIDs=PartnerToOrder.get(partnerId);
         }
 
         //assginnig the list of orders to partner
@@ -99,14 +99,16 @@ public class OrderRepsitory {
     }
 
     public void deleteOrderID(String orderId) {
-        String Partnerid= orderPartnerDb.get(orderId);
-        orderPartnerDb.remove(Partnerid);
+
+        orderPartnerDb.remove(orderId);
 
         orderDb.remove(orderId);
+        String Partnerid= orderPartnerDb.get(orderId);
         PartnerToOrder.get(Partnerid).remove(orderId);
 
-        DeliveryPartner deliveryPartner =new DeliveryPartner(orderId);
-        deliveryPartner.setNumberOfOrders(orderPartnerDb.size());
+        //decrease the size of the number of orders
+        DeliveryPartner deliveryPartner =new DeliveryPartner(Partnerid);
+        deliveryPartner.setNumberOfOrders(PartnerToOrder.get(Partnerid).size());
 
     }
 
@@ -116,7 +118,7 @@ public class OrderRepsitory {
         List<String> orderId = PartnerToOrder.get(partnerId);
 // since orders are stored in Orderdb, we will get the time of delivery
         for (String Ids : orderId) {
-            int Deliverytime = orderDb.get(orderId).getDeliveryTime();
+            int Deliverytime = orderDb.get(Ids).getDeliveryTime();
             if (newTime < Deliverytime) {
                 count++;
             }
