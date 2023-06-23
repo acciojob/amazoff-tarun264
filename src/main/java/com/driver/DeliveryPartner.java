@@ -10,11 +10,12 @@ public class DeliveryPartner {
         this.numberOfOrders = 0;
     }
 
+
     public String getId() {
         return id;
     }
 
-    public Integer getNumberOfOrders(){
+    public Integer getNumberOfOrders() {
         return numberOfOrders;
     }
 
@@ -22,3 +23,4 @@ public class DeliveryPartner {
         this.numberOfOrders = numberOfOrders;
     }
 }
+
