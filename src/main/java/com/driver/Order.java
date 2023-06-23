@@ -3,17 +3,12 @@ package com.driver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
 
 public class Order {
 
 
     private String id;
     private int deliveryTime;
-
-    public Order(int deliveryTime) {
-        this.deliveryTime = deliveryTime;
-    }
 
     public void setId(String id) {
         this.id = id;
