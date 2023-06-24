@@ -34,7 +34,7 @@ public class Order {
     }
 
     public int getDeliveryTime() {
-        return deliveryTime;
+        return this.deliveryTime;
     }
 
 
