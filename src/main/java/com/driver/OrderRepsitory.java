@@ -2,6 +2,7 @@ package com.driver;
 
 import org.springframework.stereotype.Repository;
 
+import javax.servlet.http.Part;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,9 +80,14 @@ public class OrderRepsitory {
     }
 
     public Integer countUnassigned() {
-        int totalOrders=orderDb.size();
-        int assignedOrders=orderPartnerDb.size();
-        return totalOrders-assignedOrders;
+        int totalOrders = orderDb.size();
+        int assignedOrders = 0;
+
+        for (List<String> orders : PartnerToOrder.values()) {
+            assignedOrders += orders.size();
+        }
+
+        return totalOrders - assignedOrders;
     }
 
     public void deletePartnerID(String partnerId) {
@@ -94,21 +100,23 @@ public class OrderRepsitory {
         //removing all orders assgined to partner while iterating in orders list
         for (String order:orders)
         {
-            orderPartnerDb.remove(orders);
+            orderPartnerDb.remove(order);
         }
     }
 
     public void deleteOrderID(String orderId) {
 
-        orderPartnerDb.remove(orderId);
+       orderPartnerDb.remove(orderId);
 
-        orderDb.remove(orderId);
-        String Partnerid= orderPartnerDb.get(orderId);
-        PartnerToOrder.get(Partnerid).remove(orderId);
 
-        //decrease the size of the number of orders
-        DeliveryPartner deliveryPartner =new DeliveryPartner(Partnerid);
-        deliveryPartner.setNumberOfOrders(PartnerToOrder.get(Partnerid).size());
+       if(orderPartnerDb.containsKey(orderId)){
+           String partnerId= orderPartnerDb.get(orderId);
+           orderPartnerDb.remove(orderId);
+           PartnerToOrder.get(partnerId).remove(orderId);
+           //decrease the size of the number of orders
+           DeliveryPartner deliveryPartner =new DeliveryPartner(partnerId);
+           deliveryPartner.setNumberOfOrders(PartnerToOrder.get(partnerId).size());
+       }
 
     }
 
@@ -128,14 +136,18 @@ public class OrderRepsitory {
 
 
     public int getLastDeliveryTime(String partnerId) {
-       int lastTime=0;
+        int lastTime = 0;
 
-        for (String orders: orderDb.keySet())
-        {
-            int delivTime=orderDb.get(orders).getDeliveryTime();
-            lastTime=Math.max(lastTime,delivTime);
+        // Get the orders assigned to the partner
+        List<String> orders = PartnerToOrder.get(partnerId);
 
+        if (orders != null) {
+            for (String orderId : orders) {
+                int deliveryTime = orderDb.get(orderId).getDeliveryTime();
+                lastTime = Math.max(lastTime, deliveryTime);
+            }
         }
+
         return lastTime;
     }
 }
